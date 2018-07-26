@@ -6,8 +6,8 @@ export default class CartService{
 
     constructor(localStorageService){
 
-        if(localStorageService.get('cart')){
-            this.cart = localStorageService.get('cart');
+        if(localStorageService.get('cartProduct')){
+            this.cart = localStorageService.get('cartProduct');
         }//if
         else{
             this.cart = [];
@@ -24,7 +24,7 @@ export default class CartService{
 
         this.cart.push( product );
 
-        this.localStorageService.set( 'cart' , this.cart );
+        this.localStorageService.set( 'cartProduct' , this.cart );
     }//addProduct
 
 }
