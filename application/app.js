@@ -119,14 +119,31 @@ app.config( [
                 'templateUrl': "templates/home/home.html",
                 controller: [ '$scope' ,  'CartService' , 'products', 'news' , function ($scope , CartService , products,news){
 
+                    let start=0;
+                    let end=12;
                     $scope.cart = CartService.getCart();
-                    $scope.cart.forEach(p=>{
-                        
+                    products.forEach(p=>{
+
+                        for(let i=0; i<$scope.cart.length; i++){
+                            if(p.ProductID === $scope.cart[i].ProductID){
+                                p.isInCart=true;
+                            }
+                        }
                     })
 
-                    $scope.products = products;
+                    $scope.products = products.slice(start,end);
 
-                    
+                    $scope.MoreProduct = function  (){
+
+                        if(products.length>end){
+                            end += 4;
+                        }
+
+                        console.log(`start: ${start} end: ${end}`);
+
+                        $scope.products = products.slice(start,end);
+                    }
+
                     $scope.news = news;
 
 
@@ -152,7 +169,33 @@ app.config( [
         }
     });
 
+    $stateProvider.state('singleProduct' , {
+            'url': '/product/:productID',
+            'views':{
+                "header":{
+                    "templateUrl": "templates/header.html",
+                    controller: [ '$scope' , 'CartService' , 'langs' , function ($scope, CartService , langs ){
+                       $scope.langs = langs;
+                        $scope.cart = CartService.getCart();
+                    } ]
+                },
+                "content": {
+                    'templateUrl': "product.html",
+                     },
+                "footer": {
+                    'templateUrl': "templates/footer.html",
+                }
 
+            },
+            'resolve': {
+
+
+            'langs': [ 'LocaleService' , function ( LocaleService ){
+                return LocaleService.getLangs();
+            }  ]
+
+        }
+        });
 
 } ] );
 
