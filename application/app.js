@@ -1,41 +1,103 @@
 "use strict";
 
 //====================CONTROLLERS===========================//
-import HomeController from './controllers/HomeController';
+import MainController from './controllers/MainController';
 
 //====================SERVICES==============================//
-
+import LocaleService from './services/LocaleService';
+import ProductService from './services/ProductService';
+import CartService from './services/CartService';
+import NewsService from './services/NewsService';
 
 //====================FILTERS==============================//
 
 //====================DIRECTIVES==============================//
+import LangsOptionDirective from './directives/LangsOptionDirective';
+import ProductDirective from './directives/ProductDirective';
+
+angular.module('VtaminkaApplication.controllers' , []);
+angular.module('VtaminkaApplication.services' , []);
+angular.module('VtaminkaApplication.filters' , []);
+angular.module('VtaminkaApplication.directives' , []);
+angular.module('VtaminkaApplication.constants' , []);
+
+//====================CONTROLLERS DECLARATIONS================================//
+angular.module('VtaminkaApplication.controllers')
+    .controller( 'MainController' , [ '$scope' , 'LocaleService' , '$translate', MainController ]);
+
+//====================CONSTANTS================================//
+angular.module('VtaminkaApplication.constants')
+       .constant('HOST' , 'http://localhost:63342/Vtaminka/public/');
+
+angular.module('VtaminkaApplication.constants')
+    .constant('PASS' , {
+        HOST: 'http://localhost:63342/Vtaminka/public/',
+        NEWS : 'news/news-list.json',
+    });
+
+angular.module('VtaminkaApplication.constants')
+    .constant('GET_LANGS' , 'i18n/langs.json');
+
+//GET_PRODUCTS
+angular.module('VtaminkaApplication.constants')
+    .constant('GET_PRODUCTS' , 'products/products-list.json');
+
+angular.module('VtaminkaApplication.constants')
+    .constant('GET_TRANSLATIONS' , 'i18n/{{LANG}}.json');
+
+//====================SERVICES DECLARATIONS===================//
+angular.module('VtaminkaApplication.services')
+    .service('LocaleService' , [ '$http', 'HOST' , 'GET_LANGS' , 'GET_TRANSLATIONS' , LocaleService ]);
+
+angular.module('VtaminkaApplication.services')
+    .service('ProductService' , [ '$http', 'HOST' , 'GET_PRODUCTS' , ProductService ]);
+
+angular.module('VtaminkaApplication.services')
+    .service( 'CartService' , [ 'localStorageService', CartService ]);
+
+angular.module('VtaminkaApplication.services')
+    .service('NewsService', ['$http', 'PASS', NewsService ]);
+
+//====================DIRECTIVES DECLARATIONS===================//
+angular.module('VtaminkaApplication.directives')
+    .directive('langsOptionDirective' , [ LangsOptionDirective ]);
+
+angular.module('VtaminkaApplication.directives')
+    .directive('productDirective' , [ ProductDirective ]);
 
 
-angular.module('SkeletonApplication.controllers' , []);
-angular.module('SkeletonApplication.services' , []);
-angular.module('SkeletonApplication.filters' , []);
-angular.module('SkeletonApplication.directives' , []);
-
-
-let app = angular.module('SkeletonApplication',[
+let app = angular.module('VtaminkaApplication',[
     'angular-loading-bar',
     'LocalStorageModule',
-    'SkeletonApplication.controllers',
-    'SkeletonApplication.filters',
-    'SkeletonApplication.services',
-    'SkeletonApplication.directives',
+    'VtaminkaApplication.controllers',
+    'VtaminkaApplication.filters',
+    'VtaminkaApplication.services',
+    'VtaminkaApplication.directives',
+    'VtaminkaApplication.constants',
     'ngRoute',
     'ui.router',
+    'pascalprecht.translate',
 ]);
 
 app.config( [
     '$stateProvider',
     '$urlRouterProvider',
+    '$locationProvider',
     'localStorageServiceProvider' ,
     'cfpLoadingBarProvider',
-    ($stateProvider , $urlRouterProvider , localStorageServiceProvider , cfpLoadingBarProvider)=>{
+    '$translateProvider',
+    ($stateProvider , $urlRouterProvider , $locationProvider , localStorageServiceProvider , cfpLoadingBarProvider , $translateProvider)=>{
+
+    $locationProvider.html5Mode(true).hashPrefix('!')
 
     $urlRouterProvider.otherwise('/home');
+
+    $translateProvider.useStaticFilesLoader({
+        'prefix': 'i18n/',
+        'suffix': '.json'
+    });
+
+    $translateProvider.preferredLanguage('RU');
 
     cfpLoadingBarProvider.includeSpinner = true;
     cfpLoadingBarProvider.includeBar = true;
@@ -48,16 +110,49 @@ app.config( [
         'views':{
             "header":{
                 "templateUrl": "templates/header.html",
+                controller: [ '$scope' , 'CartService' , 'langs' , function ($scope, CartService , langs ){
+                    $scope.langs = langs;
+                    $scope.cart = CartService.getCart();
+                } ]
             },
             "content": {
-                'templateUrl': "templates/home.html",
-                'controller': [ '$scope' , HomeController ],
+                'templateUrl': "templates/home/home.html",
+                controller: [ '$scope' ,  'CartService' , 'products', 'news' , function ($scope , CartService , products,news){
+
+                    $scope.cart = CartService.getCart();
+                    $scope.cart.forEach(p=>{
+                        
+                    })
+
+                    $scope.products = products;
+
+                    
+                    $scope.news = news;
+
+
+                } ]
             },
             "footer": {
                 'templateUrl': "templates/footer.html",
             }
         },
+        'resolve': {
+
+            'products': [ 'ProductService' , function ( ProductService ){
+                return ProductService.getProducts();
+            } ],
+            'langs': [ 'LocaleService' , function ( LocaleService ){
+                return LocaleService.getLangs();
+            }  ],
+            'news': [ 'NewsService', function  ( NewsService ){
+                return NewsService.getNews()
+            }
+            ]
+
+        }
     });
+
+
 
 } ] );
 
