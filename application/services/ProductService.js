@@ -4,18 +4,17 @@ export default class ProductService{
 
     constructor(
         $http ,
-        HOST ,
-        GET_PRODUCTS
+       PASS
     ){
 
         this._$http = $http;
-        this._HOST = HOST;
-        this._GET_PRODUCTS = GET_PRODUCTS;
+        this._PASS = PASS;
+
     }
 
     async getProducts(){
 
-        let response = await this._$http.get( `${this._HOST}${this._GET_PRODUCTS}` );
+        let response = await this._$http.get( `${this._PASS.HOST}${this._PASS.GET_PRODUCTS}` );
 
         let products = response.data;
 
@@ -25,6 +24,16 @@ export default class ProductService{
 
         return products;
 
-    }
+    }//getProducts
+
+    async getSingleProduct(productID){
+
+        let id = this._PASS.GET_PRODUCT.replace('{{ProductID}}' , productID);
+
+        let response = await this._$http.get(`${this._PASS.HOST}${id}`);
+
+        return response.data;
+
+    }//getSingleProduct
 
 }

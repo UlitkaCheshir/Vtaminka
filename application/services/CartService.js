@@ -27,4 +27,20 @@ export default class CartService{
         this.localStorageService.set( 'cartProduct' , this.cart );
     }//addProduct
 
+    changeStorageService(cart){
+        this.localStorageService.set( 'cartProduct' , cart );
+    }//changeStorageService
+
+    _getSimpleProduct(product){
+        return {
+
+            "ProductID" :    product.ProductID,
+            "ProductTitle" : product.ProductTitle,
+            "ProductPrice" : product.ProductPrice,
+            "ProductImage" : product.ProductImage,
+            "amount" :       product.amount,
+
+        };
+    }
+
 }

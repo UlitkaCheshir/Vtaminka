@@ -14,6 +14,8 @@ import NewsService from './services/NewsService';
 //====================DIRECTIVES==============================//
 import LangsOptionDirective from './directives/LangsOptionDirective';
 import ProductDirective from './directives/ProductDirective';
+import SingleProductDirective from './directives/SingleProductDirective';
+
 
 angular.module('VtaminkaApplication.controllers' , []);
 angular.module('VtaminkaApplication.services' , []);
@@ -26,31 +28,25 @@ angular.module('VtaminkaApplication.controllers')
     .controller( 'MainController' , [ '$scope' , 'LocaleService' , '$translate', MainController ]);
 
 //====================CONSTANTS================================//
-angular.module('VtaminkaApplication.constants')
-       .constant('HOST' , 'http://localhost:63342/Vtaminka/public/');
 
 angular.module('VtaminkaApplication.constants')
     .constant('PASS' , {
         HOST: 'http://localhost:63342/Vtaminka/public/',
-        NEWS : 'news/news-list.json',
+        GET_NEWS : 'news/news-list.json',
+        GET_LANGS: 'i18n/langs.json',
+        GET_PRODUCTS :'products/products-list.json',
+        GET_TRANSLATIONS: 'i18n/{{LANG}}.json',
+        GET_PRODUCT:"products/Vitamin{{ProductID}}.json"
+
     });
 
-angular.module('VtaminkaApplication.constants')
-    .constant('GET_LANGS' , 'i18n/langs.json');
-
-//GET_PRODUCTS
-angular.module('VtaminkaApplication.constants')
-    .constant('GET_PRODUCTS' , 'products/products-list.json');
-
-angular.module('VtaminkaApplication.constants')
-    .constant('GET_TRANSLATIONS' , 'i18n/{{LANG}}.json');
 
 //====================SERVICES DECLARATIONS===================//
 angular.module('VtaminkaApplication.services')
-    .service('LocaleService' , [ '$http', 'HOST' , 'GET_LANGS' , 'GET_TRANSLATIONS' , LocaleService ]);
+    .service('LocaleService' , [ '$http', 'PASS', LocaleService ]);
 
 angular.module('VtaminkaApplication.services')
-    .service('ProductService' , [ '$http', 'HOST' , 'GET_PRODUCTS' , ProductService ]);
+    .service('ProductService' , [ '$http', 'PASS', ProductService ]);
 
 angular.module('VtaminkaApplication.services')
     .service( 'CartService' , [ 'localStorageService', CartService ]);
@@ -64,6 +60,9 @@ angular.module('VtaminkaApplication.directives')
 
 angular.module('VtaminkaApplication.directives')
     .directive('productDirective' , [ ProductDirective ]);
+
+angular.module('VtaminkaApplication.directives')
+    .directive('singleProductDirective' , [ SingleProductDirective ]);
 
 
 let app = angular.module('VtaminkaApplication',[
@@ -127,6 +126,7 @@ app.config( [
                         for(let i=0; i<$scope.cart.length; i++){
                             if(p.ProductID === $scope.cart[i].ProductID){
                                 p.isInCart=true;
+                                p.amount=$scope.cart[i].amount;
                             }
                         }
                     })
@@ -170,7 +170,7 @@ app.config( [
     });
 
     $stateProvider.state('singleProduct' , {
-            'url': '/product/:productID',
+            'url': '/product/:productID/:productAmount',
             'views':{
                 "header":{
                     "templateUrl": "templates/header.html",
@@ -180,8 +180,12 @@ app.config( [
                     } ]
                 },
                 "content": {
-                    'templateUrl': "product.html",
-                     },
+                    'templateUrl': "templates/singleProduct/singleProduct.html",
+                    controller:['$scope','product','$stateParams', function ($scope, product, $stateParams) {
+                        $scope.product = product;
+                        $scope.product.amount = $stateParams.productAmount;
+                    }]
+                },
                 "footer": {
                     'templateUrl': "templates/footer.html",
                 }
@@ -190,9 +194,14 @@ app.config( [
             'resolve': {
 
 
-            'langs': [ 'LocaleService' , function ( LocaleService ){
+                'langs': [ 'LocaleService' , function ( LocaleService ){
                 return LocaleService.getLangs();
-            }  ]
+                }  ],
+
+                'product':['ProductService','$stateParams', function  ( ProductService, $stateParams){
+                    return ProductService.getSingleProduct($stateParams.productID);
+                }
+                ]
 
         }
         });

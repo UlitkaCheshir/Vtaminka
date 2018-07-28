@@ -102,6 +102,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _services_NewsService__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./services/NewsService */ "./application/services/NewsService.js");
 /* harmony import */ var _directives_LangsOptionDirective__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./directives/LangsOptionDirective */ "./application/directives/LangsOptionDirective.js");
 /* harmony import */ var _directives_ProductDirective__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./directives/ProductDirective */ "./application/directives/ProductDirective.js");
+/* harmony import */ var _directives_SingleProductDirective__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./directives/SingleProductDirective */ "./application/directives/SingleProductDirective.js");
 
 
 //====================CONTROLLERS===========================//
@@ -119,6 +120,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+
 angular.module('VtaminkaApplication.controllers' , []);
 angular.module('VtaminkaApplication.services' , []);
 angular.module('VtaminkaApplication.filters' , []);
@@ -130,31 +133,25 @@ angular.module('VtaminkaApplication.controllers')
     .controller( 'MainController' , [ '$scope' , 'LocaleService' , '$translate', _controllers_MainController__WEBPACK_IMPORTED_MODULE_0__["default"] ]);
 
 //====================CONSTANTS================================//
-angular.module('VtaminkaApplication.constants')
-       .constant('HOST' , 'http://localhost:63342/Vtaminka/public/');
 
 angular.module('VtaminkaApplication.constants')
     .constant('PASS' , {
         HOST: 'http://localhost:63342/Vtaminka/public/',
-        NEWS : 'news/news-list.json',
+        GET_NEWS : 'news/news-list.json',
+        GET_LANGS: 'i18n/langs.json',
+        GET_PRODUCTS :'products/products-list.json',
+        GET_TRANSLATIONS: 'i18n/{{LANG}}.json',
+        GET_PRODUCT:"products/Vitamin{{ProductID}}.json"
+
     });
 
-angular.module('VtaminkaApplication.constants')
-    .constant('GET_LANGS' , 'i18n/langs.json');
-
-//GET_PRODUCTS
-angular.module('VtaminkaApplication.constants')
-    .constant('GET_PRODUCTS' , 'products/products-list.json');
-
-angular.module('VtaminkaApplication.constants')
-    .constant('GET_TRANSLATIONS' , 'i18n/{{LANG}}.json');
 
 //====================SERVICES DECLARATIONS===================//
 angular.module('VtaminkaApplication.services')
-    .service('LocaleService' , [ '$http', 'HOST' , 'GET_LANGS' , 'GET_TRANSLATIONS' , _services_LocaleService__WEBPACK_IMPORTED_MODULE_1__["default"] ]);
+    .service('LocaleService' , [ '$http', 'PASS', _services_LocaleService__WEBPACK_IMPORTED_MODULE_1__["default"] ]);
 
 angular.module('VtaminkaApplication.services')
-    .service('ProductService' , [ '$http', 'HOST' , 'GET_PRODUCTS' , _services_ProductService__WEBPACK_IMPORTED_MODULE_2__["default"] ]);
+    .service('ProductService' , [ '$http', 'PASS', _services_ProductService__WEBPACK_IMPORTED_MODULE_2__["default"] ]);
 
 angular.module('VtaminkaApplication.services')
     .service( 'CartService' , [ 'localStorageService', _services_CartService__WEBPACK_IMPORTED_MODULE_3__["default"] ]);
@@ -168,6 +165,9 @@ angular.module('VtaminkaApplication.directives')
 
 angular.module('VtaminkaApplication.directives')
     .directive('productDirective' , [ _directives_ProductDirective__WEBPACK_IMPORTED_MODULE_6__["default"] ]);
+
+angular.module('VtaminkaApplication.directives')
+    .directive('singleProductDirective' , [ _directives_SingleProductDirective__WEBPACK_IMPORTED_MODULE_7__["default"] ]);
 
 
 let app = angular.module('VtaminkaApplication',[
@@ -231,6 +231,7 @@ app.config( [
                         for(let i=0; i<$scope.cart.length; i++){
                             if(p.ProductID === $scope.cart[i].ProductID){
                                 p.isInCart=true;
+                                p.amount=$scope.cart[i].amount;
                             }
                         }
                     })
@@ -274,7 +275,7 @@ app.config( [
     });
 
     $stateProvider.state('singleProduct' , {
-            'url': '/product/:productID',
+            'url': '/product/:productID/:productAmount',
             'views':{
                 "header":{
                     "templateUrl": "templates/header.html",
@@ -284,8 +285,12 @@ app.config( [
                     } ]
                 },
                 "content": {
-                    'templateUrl': "product.html",
-                     },
+                    'templateUrl': "templates/singleProduct/singleProduct.html",
+                    controller:['$scope','product','$stateParams', function ($scope, product, $stateParams) {
+                        $scope.product = product;
+                        $scope.product.amount = $stateParams.productAmount;
+                    }]
+                },
                 "footer": {
                     'templateUrl': "templates/footer.html",
                 }
@@ -294,9 +299,14 @@ app.config( [
             'resolve': {
 
 
-            'langs': [ 'LocaleService' , function ( LocaleService ){
+                'langs': [ 'LocaleService' , function ( LocaleService ){
                 return LocaleService.getLangs();
-            }  ]
+                }  ],
+
+                'product':['ProductService','$stateParams', function  ( ProductService, $stateParams){
+                    return ProductService.getSingleProduct($stateParams.productID);
+                }
+                ]
 
         }
         });
@@ -421,6 +431,8 @@ function ProductDirective( ){
 
             $scope.changeAmount = function ( newAmount ){
                 $scope.product.amount = newAmount;
+                console.log($scope.product);
+                
             }
 
             $scope.AddProduct = function ( product ){
@@ -441,6 +453,101 @@ function ProductDirective( ){
             ripplyScott.init('.button', 0.75);
 
         }
+    }
+
+}
+
+/***/ }),
+
+/***/ "./application/directives/SingleProductDirective.js":
+/*!**********************************************************!*\
+  !*** ./application/directives/SingleProductDirective.js ***!
+  \**********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return SingleProductDirective; });
+
+
+function SingleProductDirective() {
+
+    return {
+
+        restrict:'A',
+        scope:{
+            product:'='
+        },
+        templateUrl: 'templates/directives/single-product-directive.html',
+        controller:['$scope', 'CartService', function  ($scope, CartService){
+
+            $scope.cart = CartService.getCart();
+
+            $scope.ChangeAmount= function (product) {
+
+                for(let i=0; i<$scope.cart.length; i++){
+                    if($scope.cart[i].ProductID===product.ProductID){
+                        $scope.cart[i].amount = product.amount;
+                    }//if
+                }//for
+
+                CartService.changeStorageService($scope.cart);
+            }//ChangeAmount
+            
+            $scope.AddProduct = function (product) {
+
+                let count=0;
+                for(let i=0; i<$scope.cart.length; i++){
+
+                    if($scope.cart[i].ProductID===product.ProductID){
+                        count++;
+                    }//if
+                }//for
+                
+                if(count===0){
+                    let newProduct =CartService._getSimpleProduct(product);
+                    newProduct.isInCart=true;
+                    CartService.addProduct(newProduct);
+                }//if
+                
+                console.log( $scope.cart);
+                
+            }//AddProduct
+        }
+        ],
+
+        link: function  (scope, element){
+
+
+
+                    /*
+                    get snap amount programmatically or just set it directly (e.g. "273")
+                    in this example, the snap amount is list item's (li) outer-width (width+margins)
+                    */
+                    var amount=Math.max.apply(Math,$(".tabsContent li").map(function(){return $(this).outerWidth(true);}).get());
+
+                    $(".tabsContent").mCustomScrollbar({
+                        axis:"x",
+                        theme:"inset",
+                        advanced:{
+                            autoExpandHorizontalScroll:true
+                        },
+                        scrollButtons:{
+                            enable:true,
+                            scrollType:"stepped"
+                        },
+                        keyboard:{scrollType:"stepped"},
+                        snapAmount:amount,
+                        mouseWheel:{scrollAmount:amount}
+                    });
+
+            ripplyScott.init('.button', 0.75);
+
+
+        }
+
+
     }
 
 }
@@ -486,6 +593,22 @@ class CartService{
         this.localStorageService.set( 'cartProduct' , this.cart );
     }//addProduct
 
+    changeStorageService(cart){
+        this.localStorageService.set( 'cartProduct' , cart );
+    }//changeStorageService
+
+    _getSimpleProduct(product){
+        return {
+
+            "ProductID" :    product.ProductID,
+            "ProductImage" : product.ProductImage,
+            "ProductPrice" : product.ProductPrice,
+            "ProductTitle" : product.ProductTitle,
+            "amount" :       product.amount,
+
+        };
+    }
+
 }
 
 /***/ }),
@@ -507,30 +630,27 @@ class LocaleService{
 
     constructor(
         $http ,
-        HOST ,
-        GET_LANGS,
-        GET_TRANSLATIONS
+        PASS ,
+
     ){
 
         this._$http = $http;
-        this._HOST = HOST;
-        this._GET_LANGS = GET_LANGS;
-        this._GET_TRANSLATIONS = GET_TRANSLATIONS;
+        this._PASS = PASS;
 
     }
 
     async getLangs(){
 
-            let response = await this._$http.get( `${this._HOST}${this._GET_LANGS}` );
+            let response = await this._$http.get( `${this._PASS.HOST}${this._PASS.GET_LANGS}` );
             return response.data;
 
     }//getLangs
 
     async getTranslations( lang ){
 
-        let sourceUrl = this._GET_TRANSLATIONS.replace('{{LANG}}' , lang.toUpperCase());
+        let sourceUrl = this._PASS.GET_TRANSLATIONS.replace('{{LANG}}' , lang.toUpperCase());
 
-        let response = await this._$http.get( `${this._HOST}${sourceUrl}` );
+        let response = await this._$http.get( `${this._PASS.HOST}${sourceUrl}` );
         return response.data;
 
 
@@ -564,9 +684,9 @@ class NewsService{
 
     async getNews(){
 
-        let response = await this._$http.get(`${this._PASS.HOST}${this._PASS.NEWS}` )
+        let response = await this._$http.get(`${this._PASS.HOST}${this._PASS.GET_NEWS}` )
 
-            
+
         return response.data;
     }//getNews
 }
@@ -589,18 +709,17 @@ class ProductService{
 
     constructor(
         $http ,
-        HOST ,
-        GET_PRODUCTS
+       PASS
     ){
 
         this._$http = $http;
-        this._HOST = HOST;
-        this._GET_PRODUCTS = GET_PRODUCTS;
+        this._PASS = PASS;
+
     }
 
     async getProducts(){
 
-        let response = await this._$http.get( `${this._HOST}${this._GET_PRODUCTS}` );
+        let response = await this._$http.get( `${this._PASS.HOST}${this._PASS.GET_PRODUCTS}` );
 
         let products = response.data;
 
@@ -610,7 +729,17 @@ class ProductService{
 
         return products;
 
-    }
+    }//getProducts
+
+    async getSingleProduct(productID){
+
+        let id = this._PASS.GET_PRODUCT.replace('{{ProductID}}' , productID);
+
+        let response = await this._$http.get(`${this._PASS.HOST}${id}`);
+
+        return response.data;
+
+    }//getSingleProduct
 
 }
 
