@@ -5,30 +5,27 @@ export default class LocaleService{
 
     constructor(
         $http ,
-        HOST ,
-        GET_LANGS,
-        GET_TRANSLATIONS
+        PASS ,
+
     ){
 
         this._$http = $http;
-        this._HOST = HOST;
-        this._GET_LANGS = GET_LANGS;
-        this._GET_TRANSLATIONS = GET_TRANSLATIONS;
+        this._PASS = PASS;
 
     }
 
     async getLangs(){
 
-            let response = await this._$http.get( `${this._HOST}${this._GET_LANGS}` );
+            let response = await this._$http.get( `${this._PASS.HOST}${this._PASS.GET_LANGS}` );
             return response.data;
 
     }//getLangs
 
     async getTranslations( lang ){
 
-        let sourceUrl = this._GET_TRANSLATIONS.replace('{{LANG}}' , lang.toUpperCase());
+        let sourceUrl = this._PASS.GET_TRANSLATIONS.replace('{{LANG}}' , lang.toUpperCase());
 
-        let response = await this._$http.get( `${this._HOST}${sourceUrl}` );
+        let response = await this._$http.get( `${this._PASS.HOST}${sourceUrl}` );
         return response.data;
 
 

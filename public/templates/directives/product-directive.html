@@ -1,9 +1,9 @@
 <figure>
     <div class="figurWrap">
         <h3>
-            <a ui-sref="singleProduct({'productID': product.ProductID})">
+            <a ui-sref="singleProduct({'productID': product.ProductID,'productAmount': product.amount})">
                 {{product.ProductTitle }} &mdash;
-                <span class="price" ng-bind-template="${{product.ProductPrice}}" ></span>
+                <span class="price" ng-bind-template="${{product.ProductPrice}}{{product.amount}}" ></span>
             </a>
         </h3>
         <img ng-src="{{product.ProductImage}}">
