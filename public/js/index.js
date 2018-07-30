@@ -100,9 +100,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _services_ProductService__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./services/ProductService */ "./application/services/ProductService.js");
 /* harmony import */ var _services_CartService__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./services/CartService */ "./application/services/CartService.js");
 /* harmony import */ var _services_NewsService__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./services/NewsService */ "./application/services/NewsService.js");
-/* harmony import */ var _directives_LangsOptionDirective__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./directives/LangsOptionDirective */ "./application/directives/LangsOptionDirective.js");
-/* harmony import */ var _directives_ProductDirective__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./directives/ProductDirective */ "./application/directives/ProductDirective.js");
-/* harmony import */ var _directives_SingleProductDirective__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./directives/SingleProductDirective */ "./application/directives/SingleProductDirective.js");
+/* harmony import */ var _filters_DescriptionFilter__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./filters/DescriptionFilter */ "./application/filters/DescriptionFilter.js");
+/* harmony import */ var _directives_LangsOptionDirective__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./directives/LangsOptionDirective */ "./application/directives/LangsOptionDirective.js");
+/* harmony import */ var _directives_ProductDirective__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./directives/ProductDirective */ "./application/directives/ProductDirective.js");
+/* harmony import */ var _directives_SingleProductDirective__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./directives/SingleProductDirective */ "./application/directives/SingleProductDirective.js");
+/* harmony import */ var _directives_CartDirective__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./directives/CartDirective */ "./application/directives/CartDirective.js");
 
 
 //====================CONTROLLERS===========================//
@@ -116,7 +118,9 @@ __webpack_require__.r(__webpack_exports__);
 
 //====================FILTERS==============================//
 
+
 //====================DIRECTIVES==============================//
+
 
 
 
@@ -161,13 +165,20 @@ angular.module('VtaminkaApplication.services')
 
 //====================DIRECTIVES DECLARATIONS===================//
 angular.module('VtaminkaApplication.directives')
-    .directive('langsOptionDirective' , [ _directives_LangsOptionDirective__WEBPACK_IMPORTED_MODULE_5__["default"] ]);
+    .directive('langsOptionDirective' , [ _directives_LangsOptionDirective__WEBPACK_IMPORTED_MODULE_6__["default"] ]);
 
 angular.module('VtaminkaApplication.directives')
-    .directive('productDirective' , [ _directives_ProductDirective__WEBPACK_IMPORTED_MODULE_6__["default"] ]);
+    .directive('productDirective' , [ _directives_ProductDirective__WEBPACK_IMPORTED_MODULE_7__["default"] ]);
 
 angular.module('VtaminkaApplication.directives')
-    .directive('singleProductDirective' , [ _directives_SingleProductDirective__WEBPACK_IMPORTED_MODULE_7__["default"] ]);
+    .directive('singleProductDirective' , [ _directives_SingleProductDirective__WEBPACK_IMPORTED_MODULE_8__["default"] ]);
+
+angular.module('VtaminkaApplication.directives')
+    .directive('cartDirective' , [ _directives_CartDirective__WEBPACK_IMPORTED_MODULE_9__["default"] ]);
+
+//====================FILTERS DECLARATIONS===================//
+angular.module('VtaminkaApplication.filters')
+    .filter('DescriptionFilter', [_filters_DescriptionFilter__WEBPACK_IMPORTED_MODULE_5__["default"]]);
 
 
 let app = angular.module('VtaminkaApplication',[
@@ -217,6 +228,7 @@ app.config( [
                 controller: [ '$scope' , 'CartService' , 'langs' , function ($scope, CartService , langs ){
                     $scope.langs = langs;
                     $scope.cart = CartService.getCart();
+
                 } ]
             },
             "content": {
@@ -251,7 +263,7 @@ app.config( [
 
                     $scope.news = news;
 
-
+                    ripplyScott.init('.button', 0.75);
                 } ]
             },
             "footer": {
@@ -311,6 +323,46 @@ app.config( [
         }
         });
 
+    $stateProvider.state('cart' , {
+            'url': '/cart',
+            'views':{
+                "header":{
+                    "templateUrl": "templates/header.html",
+                    controller: [ '$scope' , 'CartService' , 'langs' , function ($scope, CartService , langs ){
+                        $scope.langs = langs;
+                        $scope.cart = CartService.getCart();
+                    } ]
+                },
+                "content": {
+                    'templateUrl': "templates/cart/cart.html",
+                    controller: [ '$scope' ,  'CartService' ,  function ($scope , CartService ){
+
+                        $scope.cart = CartService.getCart();
+
+                        $scope.Total=CartService.total();
+
+                        $scope.$watch( 'cart.length' , function (){
+
+                                $scope.Total = CartService.total();
+                                $scope.$apply();
+
+                        } );
+                    } ]
+                },
+                "footer": {
+                    'templateUrl': "templates/footer.html",
+                }
+            },
+            'resolve': {
+
+                'langs': [ 'LocaleService' , function ( LocaleService ){
+                    return LocaleService.getLangs();
+                }  ],
+
+
+            }
+        });
+
 } ] );
 
 app.run(
@@ -346,6 +398,76 @@ class MainController{
     }//constructor
 
 }
+
+/***/ }),
+
+/***/ "./application/directives/CartDirective.js":
+/*!*************************************************!*\
+  !*** ./application/directives/CartDirective.js ***!
+  \*************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return CartDirective; });
+
+
+
+function CartDirective (){
+
+    return{
+
+        restrict: 'A',
+        scope: {
+            product:'='
+        },
+        templateUrl: 'templates/directives/cart-directive.html',
+
+        controller: ['$scope', 'ProductService','CartService', function  ($scope, ProductService,  CartService){
+
+                 ProductService.getSingleProduct($scope.product.ProductID)
+                     .then (response=>{
+                         $scope.product.description = response.ProductDescription;
+
+                     })
+                     .catch(error=>{
+                         console.log(error);
+                     })
+
+                 $scope.cart = CartService.getCart();
+
+
+                 $scope.RemoveProduct = function  (product){
+
+                     let index=-1;
+                     for(let i=0; i<$scope.cart.length; i++){
+                         if($scope.cart[i]['ProductID'] === product.ProductID) {
+                             index = i;
+                         }
+                     }
+
+                     $scope.cart.splice( index , 1 );
+                     CartService.changeStorageService($scope.cart);
+
+
+                 }
+
+                 $scope.ChangeProductAmount= function  (product){
+
+                     console.log( $scope.$parent.$parent);
+
+                     $scope.$parent.$parent.Total=CartService.total();
+
+                     CartService.changeStorageService($scope.cart);
+                 }
+
+
+        }  ]
+    }
+
+}
+
 
 /***/ }),
 
@@ -431,16 +553,18 @@ function ProductDirective( ){
 
             $scope.changeAmount = function ( newAmount ){
                 $scope.product.amount = newAmount;
-                console.log($scope.product);
+
                 
             }
 
             $scope.AddProduct = function ( product ){
                 product.isInCart = true;
                 CartService.addProduct( product );
-                console.log( CartService.getCart() )
-            }
 
+            }
+            
+
+            
         } ],
         link: function ( scope , element ){
 
@@ -554,6 +678,30 @@ function SingleProductDirective() {
 
 /***/ }),
 
+/***/ "./application/filters/DescriptionFilter.js":
+/*!**************************************************!*\
+  !*** ./application/filters/DescriptionFilter.js ***!
+  \**************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return DescriptionFilter; });
+
+
+function DescriptionFilter (){
+    
+    return function (str, maxLength) {
+
+        return str.length < maxLength ? str : `${str.substring(0, maxLength)}...`;
+    }
+
+}
+
+
+/***/ }),
+
 /***/ "./application/services/CartService.js":
 /*!*********************************************!*\
   !*** ./application/services/CartService.js ***!
@@ -594,19 +742,43 @@ class CartService{
     }//addProduct
 
     changeStorageService(cart){
-        this.localStorageService.set( 'cartProduct' , cart );
+
+        let cartNew=[];
+        for(let i=0; i<cart.length; i++){
+            cartNew.push(this._getSimpleProduct(cart[i]));
+        }
+        this.localStorageService.set( 'cartProduct' , cartNew );
     }//changeStorageService
 
     _getSimpleProduct(product){
         return {
 
             "ProductID" :    product.ProductID,
-            "ProductImage" : product.ProductImage,
-            "ProductPrice" : product.ProductPrice,
             "ProductTitle" : product.ProductTitle,
+            "ProductPrice" : product.ProductPrice,
+            "ProductImage" : product.ProductImage,
             "amount" :       product.amount,
+            "isInCart"     :  product.isInCart,
 
         };
+    }
+
+
+    total(){
+        let Total={
+            totalAmount: 0,
+            totalPrice:  0
+        };
+
+
+        for(let i=0; i<this.cart.length; i++){
+
+            Total.totalAmount+=+this.cart[i].amount;
+
+            Total.totalPrice+=this.cart[i].amount*this.cart[i].ProductPrice;
+
+        }
+        return Total;
     }
 
 }

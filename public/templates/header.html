@@ -17,14 +17,14 @@
 
         <div class="delimeter"></div>
         <div class="cart">
-            <a href="cart.html">
+            <a ui-sref="cart">
                 <span class="cartIcon">n</span>
                 <span class="cartCount" ng-bind="cart.length" ></span>
             </a>
         </div>
         <div class="menu hidden-sm hidden-xs">
             <nav class="topMenu cl-effect-2">
-                <a href="index.html" translate >LAYOUT_MAIN_LINK</a>
+                <a ui-sref="home" translate >LAYOUT_MAIN_LINK</a>
                 <a href="products.html" translate >LAYOUT_PRODUCTS_LINK</a>
                 <a href="blog.html" translate>LAYOUT_BLOG_LINK</a>
                 <a href="about_us.html" translate >LAYOUT_ABOUT_LINK</a>
@@ -41,20 +41,20 @@
             <a href="#" class="dropdown-toggle smallMenuA" >T</a>
         </div>
         <div class="logo">
-            <a href="index.html"><img src="images/logo.png" alt=""></a>
+            <a ui-sref="home"><img src="images/logo.png" alt=""></a>
         </div>
         <div class="cart">
-            <a href="cart.html">
+            <a ui-sref="cart">
                 <span class="cartIcon">n</span>
                 <span class="cartCount" ng-bind="cart.length"></span>
             </a>
         </div>
         <div class="menu hidden-sm hidden-xs">
             <nav class="mainMenu cl-effect-5">
-                <a href="#" ><span data-hover='Мужские'>Мужские</span></a>
-                <a href="#" ><span data-hover='Женские'>Женские</span></a>
-                <a href="#" ><span data-hover='Детские'>Детские</span></a>
-                <a href="#" ><span data-hover='Спортивные'>Спортивные</span></a>
+                <a href="#" ><span translate data-hover="{{'LAYOUT_CATEGORY_MAN_LINK' | translate }}" >LAYOUT_CATEGORY_MAN_LINK</span></a>
+                <a href="#" ><span data-hover="{{'LAYOUT_CATEGORY_WOMAN_LINK' | translate }}" translate>LAYOUT_CATEGORY_WOMAN_LINK</span></a>
+                <a href="#" ><span data-hover="{{'LAYOUT_CATEGORY_CHILDREN_LINK' | translate }}" translate>LAYOUT_CATEGORY_CHILDREN_LINK</span></a>
+                <a href="#" ><span data-hover="{{'LAYOUT_CATEGORY_SPORT_LINK' | translate }}" translate>LAYOUT_CATEGORY_SPORT_LINK</span></a>
             </nav>
         </div>
 
