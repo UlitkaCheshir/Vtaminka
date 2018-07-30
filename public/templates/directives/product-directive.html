@@ -3,7 +3,7 @@
         <h3>
             <a ui-sref="singleProduct({'productID': product.ProductID,'productAmount': product.amount})">
                 {{product.ProductTitle }} &mdash;
-                <span class="price" ng-bind-template="${{product.ProductPrice}}{{product.amount}}" ></span>
+                <span class="price" ng-bind-template="${{product.ProductPrice}}" ></span>
             </a>
         </h3>
         <img ng-src="{{product.ProductImage}}">

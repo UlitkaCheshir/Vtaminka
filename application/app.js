@@ -11,10 +11,12 @@ import NewsService from './services/NewsService';
 
 //====================FILTERS==============================//
 
+import DescriptionFilter from './filters/DescriptionFilter';
 //====================DIRECTIVES==============================//
 import LangsOptionDirective from './directives/LangsOptionDirective';
 import ProductDirective from './directives/ProductDirective';
 import SingleProductDirective from './directives/SingleProductDirective';
+import CartDirective from './directives/CartDirective';
 
 
 angular.module('VtaminkaApplication.controllers' , []);
@@ -64,6 +66,13 @@ angular.module('VtaminkaApplication.directives')
 angular.module('VtaminkaApplication.directives')
     .directive('singleProductDirective' , [ SingleProductDirective ]);
 
+angular.module('VtaminkaApplication.directives')
+    .directive('cartDirective' , [ CartDirective ]);
+
+//====================FILTERS DECLARATIONS===================//
+angular.module('VtaminkaApplication.filters')
+    .filter('DescriptionFilter', [DescriptionFilter]);
+
 
 let app = angular.module('VtaminkaApplication',[
     'angular-loading-bar',
@@ -112,6 +121,7 @@ app.config( [
                 controller: [ '$scope' , 'CartService' , 'langs' , function ($scope, CartService , langs ){
                     $scope.langs = langs;
                     $scope.cart = CartService.getCart();
+
                 } ]
             },
             "content": {
@@ -146,7 +156,7 @@ app.config( [
 
                     $scope.news = news;
 
-
+                    ripplyScott.init('.button', 0.75);
                 } ]
             },
             "footer": {
@@ -204,6 +214,46 @@ app.config( [
                 ]
 
         }
+        });
+
+    $stateProvider.state('cart' , {
+            'url': '/cart',
+            'views':{
+                "header":{
+                    "templateUrl": "templates/header.html",
+                    controller: [ '$scope' , 'CartService' , 'langs' , function ($scope, CartService , langs ){
+                        $scope.langs = langs;
+                        $scope.cart = CartService.getCart();
+                    } ]
+                },
+                "content": {
+                    'templateUrl': "templates/cart/cart.html",
+                    controller: [ '$scope' ,  'CartService' ,  function ($scope , CartService ){
+
+                        $scope.cart = CartService.getCart();
+
+                        $scope.Total=CartService.total();
+
+                        $scope.$watch( 'cart.length' , function (){
+
+                                $scope.Total = CartService.total();
+                                $scope.$apply();
+
+                        } );
+                    } ]
+                },
+                "footer": {
+                    'templateUrl': "templates/footer.html",
+                }
+            },
+            'resolve': {
+
+                'langs': [ 'LocaleService' , function ( LocaleService ){
+                    return LocaleService.getLangs();
+                }  ],
+
+
+            }
         });
 
 } ] );

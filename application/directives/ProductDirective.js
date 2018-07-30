@@ -14,16 +14,18 @@ export default  function ProductDirective( ){
 
             $scope.changeAmount = function ( newAmount ){
                 $scope.product.amount = newAmount;
-                console.log($scope.product);
+
                 
             }
 
             $scope.AddProduct = function ( product ){
                 product.isInCart = true;
                 CartService.addProduct( product );
-                console.log( CartService.getCart() )
-            }
 
+            }
+            
+
+            
         } ],
         link: function ( scope , element ){
 
