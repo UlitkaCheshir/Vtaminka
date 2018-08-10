@@ -40,7 +40,7 @@ export default  function SingleProductDirective() {
                     CartService.addProduct(newProduct);
                 }//if
                 
-                console.log( $scope.cart);
+
                 
             }//AddProduct
         }

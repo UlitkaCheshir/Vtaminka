@@ -4,7 +4,7 @@
 export default class CartService{
 
 
-    constructor(localStorageService){
+    constructor(localStorageService, $http, PASS){
 
         if(localStorageService.get('cartProduct')){
             this.cart = localStorageService.get('cartProduct');
@@ -14,6 +14,8 @@ export default class CartService{
         }//else
 
         this.localStorageService=localStorageService;
+        this.http = $http;
+        this.PASS= PASS;
     }//constructor
 
     getCart(){
@@ -66,5 +68,12 @@ export default class CartService{
         }
         return Total;
     }
+
+
+    async  GetPromo (){
+        let response = await this.http.get(`${this.PASS.HOST}${this.PASS.GET_PROMO}`);
+        return response.data;
+
+    };
 
 }

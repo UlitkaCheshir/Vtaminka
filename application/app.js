@@ -19,6 +19,7 @@ import SingleProductDirective from './directives/SingleProductDirective';
 import CartDirective from './directives/CartDirective';
 
 
+
 angular.module('VtaminkaApplication.controllers' , []);
 angular.module('VtaminkaApplication.services' , []);
 angular.module('VtaminkaApplication.filters' , []);
@@ -38,7 +39,8 @@ angular.module('VtaminkaApplication.constants')
         GET_LANGS: 'i18n/langs.json',
         GET_PRODUCTS :'products/products-list.json',
         GET_TRANSLATIONS: 'i18n/{{LANG}}.json',
-        GET_PRODUCT:"products/Vitamin{{ProductID}}.json"
+        GET_PRODUCT:"products/Vitamin{{ProductID}}.json",
+        GET_PROMO:"products/promo.json"
 
     });
 
@@ -51,7 +53,7 @@ angular.module('VtaminkaApplication.services')
     .service('ProductService' , [ '$http', 'PASS', ProductService ]);
 
 angular.module('VtaminkaApplication.services')
-    .service( 'CartService' , [ 'localStorageService', CartService ]);
+    .service( 'CartService' , [ 'localStorageService','$http','PASS', CartService ]);
 
 angular.module('VtaminkaApplication.services')
     .service('NewsService', ['$http', 'PASS', NewsService ]);
@@ -68,6 +70,8 @@ angular.module('VtaminkaApplication.directives')
 
 angular.module('VtaminkaApplication.directives')
     .directive('cartDirective' , [ CartDirective ]);
+
+
 
 //====================FILTERS DECLARATIONS===================//
 angular.module('VtaminkaApplication.filters')
@@ -128,6 +132,8 @@ app.config( [
                 'templateUrl': "templates/home/home.html",
                 controller: [ '$scope' ,  'CartService' , 'products', 'news' , function ($scope , CartService , products,news){
 
+                    ripplyScott.init('.button', 0.75);
+
                     let start=0;
                     let end=12;
                     $scope.cart = CartService.getCart();
@@ -156,7 +162,7 @@ app.config( [
 
                     $scope.news = news;
 
-                    ripplyScott.init('.button', 0.75);
+
                 } ]
             },
             "footer": {
@@ -166,6 +172,7 @@ app.config( [
         'resolve': {
 
             'products': [ 'ProductService' , function ( ProductService ){
+
                 return ProductService.getProducts();
             } ],
             'langs': [ 'LocaleService' , function ( LocaleService ){
@@ -240,6 +247,124 @@ app.config( [
                                 $scope.$apply();
 
                         } );
+                    } ]
+                },
+                "footer": {
+                    'templateUrl': "templates/footer.html",
+                }
+            },
+            'resolve': {
+
+                'langs': [ 'LocaleService' , function ( LocaleService ){
+                    return LocaleService.getLangs();
+                }  ],
+
+
+            }
+        });
+
+    $stateProvider.state('checkout' , {
+            'url': '/checkout',
+            'views':{
+                "header":{
+                    "templateUrl": "templates/header.html",
+                    controller: [ '$scope' , 'CartService' , 'langs' , function ($scope, CartService , langs ){
+                        $scope.langs = langs;
+                        $scope.cart = CartService.getCart();
+                    } ]
+                },
+                "content": {
+                    'templateUrl': "templates/checkout/checkout.html",
+                    controller: [ '$scope' , 'PASS','$http', 'CartService' ,  function ($scope , PASS, $http, CartService ){
+
+                        $scope.cart = CartService.getCart();
+
+                        $scope.promoOk=false;
+
+                        $scope.regName=true;
+                        $scope.regMail=true;
+                        $scope.regPhone=true;
+
+                        ripplyScott.init('.button', 0.75);
+
+                        $scope.PromoClick = function  (){
+
+                            let promos=[];
+
+                            CartService.GetPromo()
+                                .then(response=>{
+                                        promos=response;
+
+                                    let index=-1;
+                                    for(let i=0; i<promos.length; i++){
+                                        if(promos[i]['code'] === $scope.promoCode) {
+                                            index = i;
+                                        }//if
+                                    }//for
+
+
+                                    if(index!=-1){
+                                        $scope.promoOk=true;
+                                        $scope.Promo=promos[index];
+
+                                        $scope.Total = CartService.total();
+                                    }
+                                    else{
+                                        $scope.promoOk=false;
+                                    }
+
+                                    })
+                                .catch(error=>{
+                                    console.log(error);
+                                });
+
+
+
+                            
+                        }//PromoClick
+
+                        $scope.RegName = function  (){
+
+                            let regEng = /^[A-Z]{1}[a-z]{3,10}$/;
+
+                            let regLat = /^[А-Я]{1}[а-я]{3,10}$/;
+
+                            if(regEng.test($scope.name) || regLat.test($scope.name)) {
+                                $scope.regName=true;
+                            }//if
+                            else {
+                                $scope.regName=false;
+                            }
+
+                        }//RegName
+                        
+                        $scope.RegEmail=function  (){
+
+                            let regEmail = /^[a-z0-9\.\_\-]+@[a-z0-9]{2,6}(\.[a-z0-9]+)?\.[a-z]{2,5}$/ig;
+
+                            if(regEmail.test($scope.email)) {
+                                $scope.regMail=true;
+                            }//if
+                            else {
+                                $scope.regMail=false;
+                            }
+
+                        }//RegEmail
+
+                        $scope.RegPhone = function  (){
+
+                            let regPhone = /^\+38\(0[0-9]{2}\)\-[0-9]{3}(\-[0-9]{2}){2}$/i;
+
+                            if(regPhone.test($scope.phone)) {
+                                $scope.regPhone=true;
+                            }//if
+                            else {
+                                $scope.regPhone=false;
+                            }
+
+                        }//RegPhone
+
+
                     } ]
                 },
                 "footer": {

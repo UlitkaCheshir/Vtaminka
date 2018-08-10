@@ -42,7 +42,9 @@ export default function CartDirective (){
 
                  $scope.ChangeProductAmount= function  (product){
 
-                     console.log( $scope.$parent.$parent);
+                     if(product.amount==0){
+                         $scope.RemoveProduct(product);
+                     }
 
                      $scope.$parent.$parent.Total=CartService.total();
 
