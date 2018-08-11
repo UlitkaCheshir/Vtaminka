@@ -308,6 +308,8 @@ app.config( [
                     controller:['$scope','product','$stateParams', function ($scope, product, $stateParams) {
                         $scope.product = product;
                         $scope.product.amount = $stateParams.productAmount;
+
+                        ripplyScott.init('.button', 0.75);
                     }]
                 },
                 "footer": {
@@ -461,9 +463,6 @@ app.config( [
                         $scope.RegPhone = function  (){
 
                             let regPhone = /^\+38\(0[0-9]{2}\)\-[0-9]{3}(\-[0-9]{2}){2}$/i;
-
-                            console.log('phone',$scope.phone);
-                            console.log('length',$scope.phone.length);
 
                             if(regPhone.test($scope.phone)) {
                                 $scope.regPhone=true;

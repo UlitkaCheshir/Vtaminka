@@ -201,6 +201,8 @@ app.config( [
                     controller:['$scope','product','$stateParams', function ($scope, product, $stateParams) {
                         $scope.product = product;
                         $scope.product.amount = $stateParams.productAmount;
+
+                        ripplyScott.init('.button', 0.75);
                     }]
                 },
                 "footer": {

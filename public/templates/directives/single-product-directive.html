@@ -26,15 +26,15 @@
                 <div class="productToCart">
                     <div class="clearfix buttonBlock">
                         <input class="input" type="text" ng-model="product.amount" ng-change="ChangeAmount(product)">
-                        <button id="js-ripple-btn" class="button styl-material" ng-click="AddProduct(product)">
-                            В корзину
+                        <button id="js-ripple-btn" class="button styl-material" ng-click="AddProduct(product)" translate>
+                            LAYOUT_ADD_BASKET
                             <svg class="ripple-obj" id="js-ripple">
                                 <use height="100" width="100" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#ripply-scott" class="js-ripple"></use>
                             </svg>
                         </button>
                     </div>
                 </div>
-                <h3>Описание</h3>
+                <h3 translate>LAYOUT_DESCRIPTION</h3>
                 <p ng-bind="product.ProductDescription"></p>
 
             </div>
@@ -48,15 +48,15 @@
             <div>
                 <div class="tabsContent">
                     <ul class="nav nav-tabs" id="myTabs" role="tablist">
-                        <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Описание</a></li>
-                        <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Состав</a></li>
-                        <li role="presentation"><a href="#info" aria-controls="info" role="tab" data-toggle="tab">Информация о продукте</a></li>
-                        <li role="presentation" class=""><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Описание</a></li>
-                        <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Состав</a></li>
-                        <li role="presentation"><a href="#info" aria-controls="info" role="tab" data-toggle="tab">Информация о продукте</a></li>
-                        <li role="presentation" class=""><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Описание</a></li>
-                        <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Состав</a></li>
-                        <li role="presentation"><a href="#info" aria-controls="info" role="tab" data-toggle="tab">Информация о продукте</a></li>
+                        <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab" translate>LAYOUT_DESCRIPTION</a></li>
+                        <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" translate>LAYOUT_COMPOSITION</a></li>
+                        <li role="presentation"><a href="#info" aria-controls="info" role="tab" data-toggle="tab" translate>LAYOUT_INFO</a></li>
+                        <li role="presentation" class=""><a href="#home" aria-controls="home" role="tab" data-toggle="tab" translate>LAYOUT_DESCRIPTION</a></li>
+                        <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" translate>LAYOUT_COMPOSITION</a></li>
+                        <li role="presentation"><a href="#info" aria-controls="info" role="tab" data-toggle="tab" translate>LAYOUT_INFO</a></li>
+                        <li role="presentation" class=""><a href="#home" aria-controls="home" role="tab" data-toggle="tab" translate>LAYOUT_DESCRIPTION</a></li>
+                        <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" translate>LAYOUT_COMPOSITION</a></li>
+                        <li role="presentation"><a href="#info" aria-controls="info" role="tab" data-toggle="tab" translate>LAYOUT_INFO</a></li>
 
                     </ul>
                 </div>
