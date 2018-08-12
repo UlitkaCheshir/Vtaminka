@@ -10,13 +10,22 @@ export default function LangsOptionDirective( ){
         scope: {
             'langs': '='
         },
-        controller: [ '$scope' , function ( $scope ){
+        controller: [ '$scope', 'localStorageService' , function ( $scope , localStorageService){
 
-            $scope.currentLang = $scope.langs[0];
+            if(localStorageService.get('vtaminka_lang')){
+                $scope.currentLang = localStorageService.get('vtaminka_lang');
+                //console.log(localStorageService.get('vtaminka_lang'));
+                
+            }//if
+            else{
+                $scope.currentLang = $scope.langs[0];
+            }//else
+
             $scope.changeLanguage = function ( newLanguage ){
 
                 $scope.$parent.updateTranslations( newLanguage );
-
+                //$translate.use(newLanguage);
+                localStorageService.set( 'vtaminka_lang' , newLanguage );
             };
 
         } ],
