@@ -217,6 +217,7 @@ app.config( [
     });
 
     $translateProvider.preferredLanguage('RU');
+       // $translateProvider.useLocalStorage();
 
     cfpLoadingBarProvider.includeSpinner = true;
     cfpLoadingBarProvider.includeBar = true;
@@ -308,6 +309,8 @@ app.config( [
                     controller:['$scope','product','$stateParams', function ($scope, product, $stateParams) {
                         $scope.product = product;
                         $scope.product.amount = $stateParams.productAmount;
+
+                        ripplyScott.init('.button', 0.75);
                     }]
                 },
                 "footer": {
@@ -381,7 +384,7 @@ app.config( [
                     } ]
                 },
                 "content": {
-                    'templateUrl': "templates/checkout/checkout.html",
+                    'templateUrl': "templates/checkout/checkout_old.html",
                     controller: [ '$scope' , 'PASS','$http', 'CartService' ,  function ($scope , PASS, $http, CartService ){
 
                         $scope.cart = CartService.getCart();
@@ -462,9 +465,6 @@ app.config( [
 
                             let regPhone = /^\+38\(0[0-9]{2}\)\-[0-9]{3}(\-[0-9]{2}){2}$/i;
 
-                            console.log('phone',$scope.phone);
-                            console.log('length',$scope.phone.length);
-
                             if(regPhone.test($scope.phone)) {
                                 $scope.regPhone=true;
                             }//if
@@ -494,11 +494,13 @@ app.config( [
 } ] );
 
 app.run(
-    [          '$rootScope', '$state', '$stateParams',
-        function ($rootScope,   $state,   $stateParams) {
+    [          '$rootScope', '$state', '$stateParams', 'localStorageService',
+        function ($rootScope,   $state,   $stateParams, localStorageService) {
+
 
         }
     ]);
+
 
 
 /***/ }),
@@ -623,13 +625,22 @@ function LangsOptionDirective( ){
         scope: {
             'langs': '='
         },
-        controller: [ '$scope' , function ( $scope ){
+        controller: [ '$scope', 'localStorageService' , function ( $scope , localStorageService){
 
-            $scope.currentLang = $scope.langs[0];
+            if(localStorageService.get('vtaminka_lang')){
+                $scope.currentLang = localStorageService.get('vtaminka_lang');
+                //console.log(localStorageService.get('vtaminka_lang'));
+                
+            }//if
+            else{
+                $scope.currentLang = $scope.langs[0];
+            }//else
+
             $scope.changeLanguage = function ( newLanguage ){
 
                 $scope.$parent.updateTranslations( newLanguage );
-
+                //$translate.use(newLanguage);
+                localStorageService.set( 'vtaminka_lang' , newLanguage );
             };
 
         } ],
