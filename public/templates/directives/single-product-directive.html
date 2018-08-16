@@ -45,43 +45,58 @@
     <div class="clearfix product">
         <div class=" col-lg-12 col-md-12 col-sm-12 col-xs-12 productText">
 
-            <div>
-                <div class="tabsContent">
-                    <ul class="nav nav-tabs" id="myTabs" role="tablist">
-                        <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab" translate>LAYOUT_DESCRIPTION</a></li>
-                        <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" translate>LAYOUT_COMPOSITION</a></li>
-                        <li role="presentation"><a href="#info" aria-controls="info" role="tab" data-toggle="tab" translate>LAYOUT_INFO</a></li>
-                        <li role="presentation" class=""><a href="#home" aria-controls="home" role="tab" data-toggle="tab" translate>LAYOUT_DESCRIPTION</a></li>
-                        <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" translate>LAYOUT_COMPOSITION</a></li>
-                        <li role="presentation"><a href="#info" aria-controls="info" role="tab" data-toggle="tab" translate>LAYOUT_INFO</a></li>
-                        <li role="presentation" class=""><a href="#home" aria-controls="home" role="tab" data-toggle="tab" translate>LAYOUT_DESCRIPTION</a></li>
-                        <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" translate>LAYOUT_COMPOSITION</a></li>
-                        <li role="presentation"><a href="#info" aria-controls="info" role="tab" data-toggle="tab" translate>LAYOUT_INFO</a></li>
-
-                    </ul>
-                </div>
-
-                <div class="tab-content">
-                    <div role="tabpanel" class="tab-pane active productBlock" id="home">
-
-                        <p ng-bind="product.ProductDescription"></p>
-
-                    </div>
-                    <div role="tabpanel" class="tab-pane productBlock" id="profile">
-
-                        <p ng ng-bind="product.ProductComposition"></p>
-                    </div>
-                    <div role="tabpanel" class="tab-pane productBlock" id="info">
-
-                        <p><span class="bold">Дозировка на год: </span> {{product.ProductInfoYear}}</p>
-                        <p><span class="bold">Дозировка на 6 месяцев:</span> {{product.ProductInfoSixMonth}}</p>
-                        <p><span class="bold">Противопоказания: </span>{{product.ProductInfoContraindications}}</p>
-                        <p><span class="bold">Дополнительные факты: </span> {{product.ProductInfoFact}}</p>
-                        <p><span class="bold">Количество в упаковке: </span> {{product.ProductInfoAmountInBox}}</p>
-                    </div>
-                </div>
-
+            <div md-content class="md-padding">
+                <md-tabs md-selected="selectedIndex" md-border-bottom md-autoselect md-swipe-content>
+                    <md-tab ng-repeat="tab in tabs"
+                            ng-disabled="tab.disabled"
+                            label="{{tab.title}}">
+                        <div class="demo-tab tab{{$index%4}}" style="padding: 25px; text-align: center;">
+                            <div ng-bind="tab.content"></div>
+                            <br/>
+                            <md-button class="md-primary md-raised" ng-disabled="tabs.length <= 1">Remove Tab</md-button>
+                        </div>
+                    </md-tab>
+                </md-tabs>
             </div>
+
+
+            <!--<div>-->
+                <!--<div class="tabsContent">-->
+                    <!--<ul class="nav nav-tabs" id="myTabs" role="tablist">-->
+                        <!--<li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab" translate>LAYOUT_DESCRIPTION</a></li>-->
+                        <!--<li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" translate>LAYOUT_COMPOSITION</a></li>-->
+                        <!--<li role="presentation"><a href="#info" aria-controls="info" role="tab" data-toggle="tab" translate>LAYOUT_INFO</a></li>-->
+                        <!--<li role="presentation" class=""><a href="#home" aria-controls="home" role="tab" data-toggle="tab" translate>LAYOUT_DESCRIPTION</a></li>-->
+                        <!--<li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" translate>LAYOUT_COMPOSITION</a></li>-->
+                        <!--<li role="presentation"><a href="#info" aria-controls="info" role="tab" data-toggle="tab" translate>LAYOUT_INFO</a></li>-->
+                        <!--<li role="presentation" class=""><a href="#home" aria-controls="home" role="tab" data-toggle="tab" translate>LAYOUT_DESCRIPTION</a></li>-->
+                        <!--<li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" translate>LAYOUT_COMPOSITION</a></li>-->
+                        <!--<li role="presentation"><a href="#info" aria-controls="info" role="tab" data-toggle="tab" translate>LAYOUT_INFO</a></li>-->
+
+                    <!--</ul>-->
+                <!--</div>-->
+
+                <!--<div class="tab-content">-->
+                    <!--<div role="tabpanel" class="tab-pane active productBlock" id="home">-->
+
+                        <!--<p ng-bind="product.ProductDescription"></p>-->
+
+                    <!--</div>-->
+                    <!--<div role="tabpanel" class="tab-pane productBlock" id="profile">-->
+
+                        <!--<p ng ng-bind="product.ProductComposition"></p>-->
+                    <!--</div>-->
+                    <!--<div role="tabpanel" class="tab-pane productBlock" id="info">-->
+
+                        <!--<p><span class="bold">Дозировка на год: </span> {{product.ProductInfoYear}}</p>-->
+                        <!--<p><span class="bold">Дозировка на 6 месяцев:</span> {{product.ProductInfoSixMonth}}</p>-->
+                        <!--<p><span class="bold">Противопоказания: </span>{{product.ProductInfoContraindications}}</p>-->
+                        <!--<p><span class="bold">Дополнительные факты: </span> {{product.ProductInfoFact}}</p>-->
+                        <!--<p><span class="bold">Количество в упаковке: </span> {{product.ProductInfoAmountInBox}}</p>-->
+                    <!--</div>-->
+                <!--</div>-->
+
+            <!--</div>-->
 
         </div>
     </div>

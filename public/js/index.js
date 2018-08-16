@@ -135,7 +135,7 @@ angular.module('VtaminkaApplication.constants' , []);
 
 //====================CONTROLLERS DECLARATIONS================================//
 angular.module('VtaminkaApplication.controllers')
-    .controller( 'MainController' , [ '$scope' , 'LocaleService' , '$translate', _controllers_MainController__WEBPACK_IMPORTED_MODULE_0__["default"] ]);
+    .controller( 'MainController' , [ '$scope' , 'LocaleService' , '$translate' , 'localStorageService' , _controllers_MainController__WEBPACK_IMPORTED_MODULE_0__["default"] ]);
 
 //====================CONSTANTS================================//
 
@@ -196,6 +196,8 @@ let app = angular.module('VtaminkaApplication',[
     'ngRoute',
     'ui.router',
     'pascalprecht.translate',
+    'ngMaterial',
+    'ngMessages'
 ]);
 
 app.config( [
@@ -217,6 +219,7 @@ app.config( [
     });
 
     $translateProvider.preferredLanguage('RU');
+
        // $translateProvider.useLocalStorage();
 
     cfpLoadingBarProvider.includeSpinner = true;
@@ -309,8 +312,31 @@ app.config( [
                     controller:['$scope','product','$stateParams', function ($scope, product, $stateParams) {
                         $scope.product = product;
                         $scope.product.amount = $stateParams.productAmount;
+                        var tabs = [
+                            { title: 'One', content: "Tabs will become paginated if there isn't enough room for them."},
+                            { title: 'Two', content: "You can swipe left and right on a mobile device to change tabs."},
+                            { title: 'Three', content: "You can bind the selected tab via the selected attribute on the md-tabs element."},
+                            { title: 'Four', content: "If you set the selected tab binding to -1, it will leave no tab selected."},
+                            { title: 'Five', content: "If you remove a tab, it will try to select a new one."},
+                            { title: 'Six', content: "There's an ink bar that follows the selected tab, you can turn it off if you want."},
+                            { title: 'Seven', content: "If you set ng-disabled on a tab, it becomes unselectable. If the currently selected tab becomes disabled, it will try to select the next tab."},
+                            { title: 'Eight', content: "If you look at the source, you're using tabs to look at a demo for tabs. Recursion!"},
+                            { title: 'Nine', content: "If you set md-theme=\"green\" on the md-tabs element, you'll get green tabs."},
+                            { title: 'Ten', content: "If you're still reading this, you should just go check out the API docs for tabs!"},
+                            { title: 'Eleven', content: "If you're still reading this, you should just go check out the API docs for tabs!"},
+                            { title: 'Twelve', content: "If you're still reading this, you should just go check out the API docs for tabs!"},
+                            { title: 'Thirteen', content: "If you're still reading this, you should just go check out the API docs for tabs!"},
+                            { title: 'Fourteen', content: "If you're still reading this, you should just go check out the API docs for tabs!"},
+                            { title: 'Fifteen', content: "If you're still reading this, you should just go check out the API docs for tabs!"},
+                            { title: 'Sixteen', content: "If you're still reading this, you should just go check out the API docs for tabs!"},
+                            { title: 'Seventeen', content: "If you're still reading this, you should just go check out the API docs for tabs!"},
+                            { title: 'Eighteen', content: "If you're still reading this, you should just go check out the API docs for tabs!"},
+                            { title: 'Nineteen', content: "If you're still reading this, you should just go check out the API docs for tabs!"},
+                            { title: 'Twenty', content: "If you're still reading this, you should just go check out the API docs for tabs!"}
+                        ];
 
-                        ripplyScott.init('.button', 0.75);
+                        $scope.tabs = tabs;
+
                     }]
                 },
                 "footer": {
@@ -354,7 +380,7 @@ app.config( [
                         $scope.$watch( 'cart.length' , function (){
 
                                 $scope.Total = CartService.total();
-                                $scope.$apply();
+                                //$scope.$apply();
 
                         } );
                     } ]
@@ -384,7 +410,7 @@ app.config( [
                     } ]
                 },
                 "content": {
-                    'templateUrl': "templates/checkout/checkout_old.html",
+                    'templateUrl': "templates/checkout/checkout.html",
                     controller: [ '$scope' , 'PASS','$http', 'CartService' ,  function ($scope , PASS, $http, CartService ){
 
                         $scope.cart = CartService.getCart();
@@ -494,8 +520,16 @@ app.config( [
 } ] );
 
 app.run(
-    [          '$rootScope', '$state', '$stateParams', 'localStorageService',
-        function ($rootScope,   $state,   $stateParams, localStorageService) {
+    [          '$rootScope', '$state', '$stateParams', 'localStorageService', '$translate',
+        function ($rootScope,   $state,   $stateParams, localStorageService , $translate) {
+
+            let userLang = localStorageService.get('lang');
+
+            if(userLang){
+                $translate.use(userLang);
+            }//if
+
+
 
 
         }
@@ -519,10 +553,16 @@ __webpack_require__.r(__webpack_exports__);
 
 class MainController{
 
-    constructor( $scope , LocaleService , $translate ){
+    constructor( $scope , LocaleService , $translate , localStorageService ){
+
+
+        $scope.localStorageService = localStorageService;
 
         $scope.updateTranslations = function ( lang ){
+
             $translate.use(lang);
+            $scope.localStorageService.set( 'lang' , lang );
+
         }
 
     }//constructor
@@ -625,12 +665,10 @@ function LangsOptionDirective( ){
         scope: {
             'langs': '='
         },
-        controller: [ '$scope', 'localStorageService' , function ( $scope , localStorageService){
+        controller: [ '$scope', 'localStorageService' , '$translate' , function ( $scope , localStorageService , $translate){
 
-            if(localStorageService.get('vtaminka_lang')){
-                $scope.currentLang = localStorageService.get('vtaminka_lang');
-                //console.log(localStorageService.get('vtaminka_lang'));
-                
+            if(localStorageService.get('lang')){
+                $scope.currentLang = localStorageService.get('lang');
             }//if
             else{
                 $scope.currentLang = $scope.langs[0];
@@ -639,8 +677,11 @@ function LangsOptionDirective( ){
             $scope.changeLanguage = function ( newLanguage ){
 
                 $scope.$parent.updateTranslations( newLanguage );
-                //$translate.use(newLanguage);
-                localStorageService.set( 'vtaminka_lang' , newLanguage );
+
+                localStorageService.set( 'lang' , newLanguage );
+
+                $translate.use(localStorageService.get('lang'));
+
             };
 
         } ],
@@ -649,7 +690,15 @@ function LangsOptionDirective( ){
             let options = '<option value="RU" >Язык</option>';
 
             scope.langs.forEach( (lang) => {
-                options += `<option value="${lang}" >${lang}</option>`;
+
+                if(scope.currentLang === lang){
+                    options += `<option value="${lang}" selected >${lang}</option>`;
+                }//if
+                else{
+                    options += `<option value="${lang}">${lang}</option>`;
+                }//else
+
+
             } );
 
             element.html( options );
@@ -659,6 +708,9 @@ function LangsOptionDirective( ){
                     onChange: scope.changeLanguage
                 }
             );
+
+
+
 
         }//link
 
@@ -742,7 +794,8 @@ function SingleProductDirective() {
 
         restrict:'A',
         scope:{
-            product:'='
+            product:'=',
+            tabs: '='
         },
         templateUrl: 'templates/directives/single-product-directive.html',
         controller:['$scope', 'CartService', function  ($scope, CartService){
@@ -835,6 +888,8 @@ function DescriptionFilter (){
     
     return function (str, maxLength) {
 
+        if( !str ) return '';
+
         return str.length < maxLength ? str : `${str.substring(0, maxLength)}...`;
     }
 
@@ -882,6 +937,7 @@ class CartService{
         this.cart.push( product );
 
         this.localStorageService.set( 'cartProduct' , this.cart );
+
     }//addProduct
 
     changeStorageService(cart){
@@ -908,6 +964,7 @@ class CartService{
 
 
     total(){
+
         let Total={
             totalAmount: 0,
             totalPrice:  0

@@ -27,6 +27,7 @@ export default class CartService{
         this.cart.push( product );
 
         this.localStorageService.set( 'cartProduct' , this.cart );
+
     }//addProduct
 
     changeStorageService(cart){
@@ -53,6 +54,7 @@ export default class CartService{
 
 
     total(){
+
         let Total={
             totalAmount: 0,
             totalPrice:  0

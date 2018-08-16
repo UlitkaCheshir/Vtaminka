@@ -10,12 +10,10 @@ export default function LangsOptionDirective( ){
         scope: {
             'langs': '='
         },
-        controller: [ '$scope', 'localStorageService' , function ( $scope , localStorageService){
+        controller: [ '$scope', 'localStorageService' , '$translate' , function ( $scope , localStorageService , $translate){
 
-            if(localStorageService.get('vtaminka_lang')){
-                $scope.currentLang = localStorageService.get('vtaminka_lang');
-                //console.log(localStorageService.get('vtaminka_lang'));
-                
+            if(localStorageService.get('lang')){
+                $scope.currentLang = localStorageService.get('lang');
             }//if
             else{
                 $scope.currentLang = $scope.langs[0];
@@ -24,8 +22,11 @@ export default function LangsOptionDirective( ){
             $scope.changeLanguage = function ( newLanguage ){
 
                 $scope.$parent.updateTranslations( newLanguage );
-                //$translate.use(newLanguage);
-                localStorageService.set( 'vtaminka_lang' , newLanguage );
+
+                localStorageService.set( 'lang' , newLanguage );
+
+                $translate.use(localStorageService.get('lang'));
+
             };
 
         } ],
@@ -34,7 +35,15 @@ export default function LangsOptionDirective( ){
             let options = '<option value="RU" >Язык</option>';
 
             scope.langs.forEach( (lang) => {
-                options += `<option value="${lang}" >${lang}</option>`;
+
+                if(scope.currentLang === lang){
+                    options += `<option value="${lang}" selected >${lang}</option>`;
+                }//if
+                else{
+                    options += `<option value="${lang}">${lang}</option>`;
+                }//else
+
+
             } );
 
             element.html( options );
@@ -44,6 +53,9 @@ export default function LangsOptionDirective( ){
                     onChange: scope.changeLanguage
                 }
             );
+
+
+
 
         }//link
 

@@ -6,7 +6,8 @@ export default  function SingleProductDirective() {
 
         restrict:'A',
         scope:{
-            product:'='
+            product:'=',
+            tabs: '='
         },
         templateUrl: 'templates/directives/single-product-directive.html',
         controller:['$scope', 'CartService', function  ($scope, CartService){

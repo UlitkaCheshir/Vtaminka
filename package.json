@@ -30,5 +30,11 @@
   "bugs": {
     "url": "https://github.com/ovsyanikov94/Vtaminka/issues"
   },
-  "homepage": "https://github.com/ovsyanikov94/Vtaminka.git#readme"
+  "homepage": "https://github.com/ovsyanikov94/Vtaminka.git#readme",
+  "dependencies": {
+    "angular-animate": "^1.7.3",
+    "angular-aria": "^1.7.3",
+    "angular-material": "^1.1.10",
+    "angular-messages": "^1.7.3"
+  }
 }
