@@ -90,7 +90,8 @@ let app = angular.module('VtaminkaApplication',[
     'ui.router',
     'pascalprecht.translate',
     'ngMaterial',
-    'ngMessages'
+    'ngMessages',
+    'ngMap'
 ]);
 
 app.config( [
@@ -409,6 +410,49 @@ app.config( [
 
             }
         });
+
+    $stateProvider.state('contacts' , {
+        'url': '/contacts',
+        'views':{
+            "header":{
+                "templateUrl": "templates/header.html",
+                controller: [ '$scope' , 'CartService' , 'langs' , function ($scope, CartService , langs ){
+                    $scope.langs = langs;
+                    $scope.cart = CartService.getCart();
+                } ]
+            },
+            "content": {
+                'templateUrl': "templates/contacts.html",
+                controller: [ '$scope' , 'NgMap' ,  function ($scope , NgMap ){
+
+                    $scope.center = {
+                        'lat': 48.019849,
+                        'lng': 37.804198
+                    };
+
+                    NgMap.getMap().then(function(map) {
+                        console.log('map' , map);
+
+                        map.setCenter($scope.center);
+
+                    });
+
+
+                } ]
+            },
+            "footer": {
+                'templateUrl': "templates/footer.html",
+            }
+        },
+        'resolve': {
+
+            'langs': [ 'LocaleService' , function ( LocaleService ){
+                return LocaleService.getLangs();
+            }  ],
+
+
+        }
+    })
 
 } ] );
 
